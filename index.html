@@ -2,29 +2,44 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zeiterfassung</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZeiterfassungsApp</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.json" />
 </head>
 <body>
   <header>
-    <h1>Zeiterfassung</h1>
+    <h1>Projekt-Zeiterfassung</h1>
     <div id="userInfo">
-      Eingeloggt als: <span id="currentUser"></span>
-      <button id="logoutBtn"><img src="icons/logout.png" alt="Logout" /></button>
+      <span id="currentUser">Gast</span>
+      <img src="icons/logout.png" alt="Logout" id="logoutBtn" title="Abmelden" />
     </div>
   </header>
 
   <main>
-    <section id="projectSection">
-      <h2>Projekt starten</h2>
-      <input type="text" id="projectName" placeholder="Projektname eingeben" />
-      <button id="startBtn"><img src="icons/start.png" alt="Start" /> Start</button>
-      <button id="pauseBtn"><img src="icons/pause.png" alt="Pause" /> Pause</button>
-      <button id="stopBtn"><img src="icons/stop.png" alt="Stop" /> Stop</button>
+    <section class="form-section">
+      <label for="projectSelect">Projekt wählen oder hinzufügen:</label>
+      <select id="projectSelect">
+        <option value="">-- Projekt auswählen --</option>
+      </select>
+      <input type="text" id="newProjectInput" placeholder="Neues Projekt eingeben..." />
+      <button onclick="addNewProject()">Projekt speichern</button>
     </section>
 
-    <section id="overviewSection">
+    <section class="form-section">
+      <div id="timerDisplay">00:00:00</div>
+      <button onclick="startTimer()">
+        <img src="icons/start.png" alt="Start" width="20"/> Start
+      </button>
+      <button onclick="pauseTimer()">
+        <img src="icons/pause.png" alt="Pause" width="20"/> Pause
+      </button>
+      <button onclick="stopTimer()">
+        <img src="icons/stop.png" alt="Stopp" width="20"/> Stopp
+      </button>
+    </section>
+
+    <section class="form-section">
       <h2>Zusammenfassung</h2>
       <div id="summaryToday"></div>
       <div id="summaryProjects"></div>
@@ -33,9 +48,9 @@
 
   <div id="warningBox" class="hidden">
     <img src="icons/warning.png" alt="Warnung" />
-    <p>Es läuft bereits ein anderes Projekt.<br />Möchtest du trotzdem fortfahren?</p>
-    <button id="confirmParallel">Ja, trotzdem starten</button>
-    <button id="cancelParallel">Abbrechen</button>
+    <p>Ein anderes Projekt läuft bereits. Trotzdem starten?</p>
+    <button onclick="confirmParallel(true)">Ja</button>
+    <button onclick="confirmParallel(false)">Nein</button>
   </div>
 
   <script src="app.js"></script>

@@ -1,106 +1,145 @@
-let currentUser = localStorage.getItem("loggedInUser");
-if (!currentUser) {
-  window.location.href = "login.html";
-}
-
-document.getElementById("currentUser").textContent = currentUser;
-
-const users = JSON.parse(localStorage.getItem("users"));
-let userData = users[currentUser].data || [];
-
-const projectInput = document.getElementById("projectName");
-const summaryToday = document.getElementById("summaryToday");
-const summaryProjects = document.getElementById("summaryProjects");
-
-let activeProject = null;
+let timer = null;
 let startTime = null;
+let elapsedTime = 0;
+let activeProject = null;
+let allowParallel = false;
 
-// Load summaries on start
-updateSummaries();
+window.onload = () => {
+  loadProjects();
+  loadSummary();
+};
 
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("loggedInUser");
-  window.location.href = "login.html";
-});
+// Start-Timer
+function startTimer() {
+  const project = getSelectedProject();
+  if (!project) return alert("Bitte ein Projekt auswählen oder hinzufügen.");
 
-document.getElementById("startBtn").addEventListener("click", () => {
-  const name = projectInput.value.trim();
-  if (!name) return alert("Bitte Projektname eingeben.");
-
-  if (activeProject && activeProject !== name) {
-    document.getElementById("warningBox").classList.remove("hidden");
+  if (activeProject && activeProject !== project && !allowParallel) {
+    showWarningBox();
     return;
   }
 
-  startProject(name);
-});
+  if (!activeProject) activeProject = project;
 
-document.getElementById("confirmParallel").addEventListener("click", () => {
-  const name = projectInput.value.trim();
-  document.getElementById("warningBox").classList.add("hidden");
-  startProject(name);
-});
-
-document.getElementById("cancelParallel").addEventListener("click", () => {
-  document.getElementById("warningBox").classList.add("hidden");
-});
-
-document.getElementById("pauseBtn").addEventListener("click", () => {
-  if (!activeProject || !startTime) return;
-  stopTracking("pause");
-});
-
-document.getElementById("stopBtn").addEventListener("click", () => {
-  if (!activeProject || !startTime) return;
-  stopTracking("stop");
-});
-
-function startProject(name) {
-  activeProject = name;
-  startTime = new Date();
-  alert(`Projekt "${name}" gestartet.`);
+  startTime = Date.now() - elapsedTime;
+  timer = setInterval(updateTimerDisplay, 1000);
 }
 
-function stopTracking(type) {
-  const endTime = new Date();
-  const duration = (endTime - startTime) / 1000; // Sekunden
-  const entry = {
-    project: activeProject,
-    start: startTime.toISOString(),
-    end: endTime.toISOString(),
-    duration,
-    date: startTime.toISOString().split("T")[0]
-  };
+// Pause-Timer
+function pauseTimer() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+    elapsedTime = Date.now() - startTime;
+  }
+}
 
-  userData.push(entry);
-  users[currentUser].data = userData;
-  localStorage.setItem("users", JSON.stringify(users));
+// Stop-Timer
+function stopTimer() {
+  if (!timer && !elapsedTime) return;
 
-  alert(`Projekt "${activeProject}" ${type === "stop" ? "gestoppt" : "pausiert"}.`);
+  clearInterval(timer);
+  const project = activeProject;
+  const durationInMs = Date.now() - startTime;
+  const durationInHours = durationInMs / (1000 * 60 * 60);
+  saveEntry(project, durationInHours);
+
+  resetTimer();
+  loadSummary();
+}
+
+function resetTimer() {
+  timer = null;
   startTime = null;
-  if (type === "stop") activeProject = null;
-
-  updateSummaries();
+  elapsedTime = 0;
+  activeProject = null;
+  allowParallel = false;
+  document.getElementById("timerDisplay").innerText = "00:00:00";
 }
 
-function updateSummaries() {
-  const today = new Date().toISOString().split("T")[0];
-  const summaryTodayData = {};
-  const projectTotals = {};
+// Anzeige aktualisieren
+function updateTimerDisplay() {
+  const diff = Date.now() - startTime;
+  const hours = String(Math.floor(diff / 3600000)).padStart(2, '0');
+  const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+  const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+  document.getElementById("timerDisplay").innerText = `${hours}:${minutes}:${seconds}`;
+}
 
-  userData.forEach((entry) => {
-    const durationMin = Math.round(entry.duration / 60);
-    if (entry.date === today) {
-      summaryTodayData[entry.project] = (summaryTodayData[entry.project] || 0) + durationMin;
-    }
-    projectTotals[entry.project] = (projectTotals[entry.project] || 0) + durationMin;
+// Neues Projekt hinzufügen
+function addNewProject() {
+  const input = document.getElementById("newProjectInput");
+  const name = input.value.trim();
+  if (!name) return;
+
+  const select = document.getElementById("projectSelect");
+  const exists = Array.from(select.options).some(opt => opt.value === name);
+  if (!exists) {
+    const option = new Option(name, name);
+    select.add(option);
+    saveProject(name);
+  }
+  input.value = "";
+}
+
+// Projekt auswählen
+function getSelectedProject() {
+  const select = document.getElementById("projectSelect");
+  return select.value || document.getElementById("newProjectInput").value.trim();
+}
+
+// Projektliste laden
+function loadProjects() {
+  const saved = JSON.parse(localStorage.getItem("projects") || "[]");
+  const select = document.getElementById("projectSelect");
+  saved.forEach(name => {
+    const option = new Option(name, name);
+    select.add(option);
   });
+}
 
-  summaryToday.innerHTML = "<h3>Heute</h3>" + Object.entries(summaryTodayData)
-    .map(([proj, mins]) => `<p>${proj}: ${Math.floor(mins / 60)}h ${mins % 60}min</p>`)
-    .join("") || "<p>Keine Einträge heute.</p>";
+// Projekte speichern
+function saveProject(name) {
+  const saved = JSON.parse(localStorage.getItem("projects") || "[]");
+  if (!saved.includes(name)) {
+    saved.push(name);
+    localStorage.setItem("projects", JSON.stringify(saved));
+  }
+}
 
-  summaryProjects.innerHTML = "<h3>Gesamt pro Projekt</h3>" + Object.entries(projectTotals)
-    .map(([proj, mins]) => `<p>${proj}: ${Math.floor(mins / 60)}h ${mins % 60}min</p>`)
-    .join("") || "<p>Keine Daten vorhanden.</p>";
+// Zeit-Eintrag speichern
+function saveEntry(project, hours) {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const key = `entries_${today}`;
+  const data = JSON.parse(localStorage.getItem(key) || "{}");
+
+  data[project] = (data[project] || 0) + hours;
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+// Tages- & Projekt-Zusammenfassung laden
+function loadSummary() {
+  const today = new Date().toISOString().slice(0, 10);
+  const data = JSON.parse(localStorage.getItem(`entries_${today}`) || "{}");
+
+  const summaryToday = document.getElementById("summaryToday");
+  const summaryProjects = document.getElementById("summaryProjects");
+  summaryToday.innerHTML = `<h3>Heute (${today}):</h3>`;
+  summaryProjects.innerHTML = "";
+
+  for (const [project, hours] of Object.entries(data)) {
+    const formatted = hours.toFixed(2).replace(".", ",");
+    summaryProjects.innerHTML += `<div><strong>${project}:</strong> ${formatted} h</div>`;
+  }
+}
+
+// Warnbox für parallele Projekte
+function showWarningBox() {
+  document.getElementById("warningBox").classList.remove("hidden");
+}
+
+function confirmParallel(choice) {
+  document.getElementById("warningBox").classList.add("hidden");
+  allowParallel = choice;
+  if (choice) startTimer();
 }
