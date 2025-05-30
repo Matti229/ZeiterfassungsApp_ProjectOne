@@ -1,145 +1,142 @@
-let timer = null;
-let startTime = null;
-let elapsedTime = 0;
-let activeProject = null;
-let allowParallel = false;
+// app.js – ZeiterfassungsApp
 
-window.onload = () => {
-  loadProjects();
-  loadSummary();
-};
+let currentUser = localStorage.getItem("currentUser") || null;
+let projects = JSON.parse(localStorage.getItem("projects")) || [];
+let activeSessions = JSON.parse(localStorage.getItem("activeSessions")) || {}; // session: {startTime, pausedTime, isRunning}
+let timeLogs = JSON.parse(localStorage.getItem("timeLogs")) || {}; // user: {project: [log]}
 
-// Start-Timer
-function startTimer() {
-  const project = getSelectedProject();
-  if (!project) return alert("Bitte ein Projekt auswählen oder hinzufügen.");
+const startBtn = document.getElementById("startBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const stopBtn = document.getElementById("stopBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const projectInput = document.getElementById("projectInput");
+const projectSelect = document.getElementById("projectSelect");
+const timeDisplay = document.getElementById("timeDisplay");
+const summaryContent = document.getElementById("summaryContent");
 
-  if (activeProject && activeProject !== project && !allowParallel) {
-    showWarningBox();
-    return;
-  }
+let interval;
 
-  if (!activeProject) activeProject = project;
-
-  startTime = Date.now() - elapsedTime;
-  timer = setInterval(updateTimerDisplay, 1000);
+function saveState() {
+  localStorage.setItem("projects", JSON.stringify(projects));
+  localStorage.setItem("activeSessions", JSON.stringify(activeSessions));
+  localStorage.setItem("timeLogs", JSON.stringify(timeLogs));
 }
 
-// Pause-Timer
-function pauseTimer() {
-  if (timer) {
-    clearInterval(timer);
-    timer = null;
-    elapsedTime = Date.now() - startTime;
-  }
+function formatTime(ms) {
+  const sec = Math.floor(ms / 1000) % 60;
+  const min = Math.floor(ms / 60000) % 60;
+  const hr = Math.floor(ms / 3600000);
+  return `${String(hr).padStart(2, '0')}:${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 }
 
-// Stop-Timer
-function stopTimer() {
-  if (!timer && !elapsedTime) return;
-
-  clearInterval(timer);
-  const project = activeProject;
-  const durationInMs = Date.now() - startTime;
-  const durationInHours = durationInMs / (1000 * 60 * 60);
-  saveEntry(project, durationInHours);
-
-  resetTimer();
-  loadSummary();
+function convertToDecimal(ms) {
+  return (ms / 3600000).toFixed(2);
 }
 
-function resetTimer() {
-  timer = null;
-  startTime = null;
-  elapsedTime = 0;
-  activeProject = null;
-  allowParallel = false;
-  document.getElementById("timerDisplay").innerText = "00:00:00";
-}
-
-// Anzeige aktualisieren
-function updateTimerDisplay() {
-  const diff = Date.now() - startTime;
-  const hours = String(Math.floor(diff / 3600000)).padStart(2, '0');
-  const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-  const seconds = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-  document.getElementById("timerDisplay").innerText = `${hours}:${minutes}:${seconds}`;
-}
-
-// Neues Projekt hinzufügen
-function addNewProject() {
-  const input = document.getElementById("newProjectInput");
-  const name = input.value.trim();
-  if (!name) return;
-
-  const select = document.getElementById("projectSelect");
-  const exists = Array.from(select.options).some(opt => opt.value === name);
-  if (!exists) {
-    const option = new Option(name, name);
-    select.add(option);
-    saveProject(name);
-  }
-  input.value = "";
-}
-
-// Projekt auswählen
-function getSelectedProject() {
-  const select = document.getElementById("projectSelect");
-  return select.value || document.getElementById("newProjectInput").value.trim();
-}
-
-// Projektliste laden
-function loadProjects() {
-  const saved = JSON.parse(localStorage.getItem("projects") || "[]");
-  const select = document.getElementById("projectSelect");
-  saved.forEach(name => {
-    const option = new Option(name, name);
-    select.add(option);
+function updateDropdown() {
+  projectSelect.innerHTML = "";
+  projects.forEach(p => {
+    const option = document.createElement("option");
+    option.value = p;
+    option.textContent = p;
+    projectSelect.appendChild(option);
   });
 }
 
-// Projekte speichern
-function saveProject(name) {
-  const saved = JSON.parse(localStorage.getItem("projects") || "[]");
-  if (!saved.includes(name)) {
-    saved.push(name);
-    localStorage.setItem("projects", JSON.stringify(saved));
+function renderSummary() {
+  if (!currentUser) return;
+  const logs = timeLogs[currentUser] || {};
+  let summaryHtml = "";
+  for (const project in logs) {
+    let dailyTotals = {};
+    logs[project].forEach(log => {
+      const date = new Date(log.date).toLocaleDateString();
+      dailyTotals[date] = (dailyTotals[date] || 0) + log.duration;
+    });
+    summaryHtml += `<h3>${project}</h3>`;
+    for (const date in dailyTotals) {
+      summaryHtml += `<p>${date}: ${convertToDecimal(dailyTotals[date])} h</p>`;
+    }
+  }
+  summaryContent.innerHTML = summaryHtml || "Keine Einträge.";
+}
+
+function startTimer(project) {
+  if (!activeSessions[project]) {
+    activeSessions[project] = {
+      startTime: Date.now(),
+      pausedTime: 0,
+      isRunning: true
+    };
+  } else {
+    const session = activeSessions[project];
+    if (!session.isRunning) {
+      session.startTime = Date.now() - session.pausedTime;
+      session.isRunning = true;
+      session.pausedTime = 0;
+    }
+  }
+  clearInterval(interval);
+  interval = setInterval(() => {
+    const now = Date.now();
+    const elapsed = now - activeSessions[project].startTime;
+    timeDisplay.textContent = formatTime(elapsed);
+  }, 1000);
+  saveState();
+}
+
+function pauseTimer(project) {
+  const session = activeSessions[project];
+  if (session && session.isRunning) {
+    session.pausedTime = Date.now() - session.startTime;
+    session.isRunning = false;
+    clearInterval(interval);
+    saveState();
   }
 }
 
-// Zeit-Eintrag speichern
-function saveEntry(project, hours) {
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const key = `entries_${today}`;
-  const data = JSON.parse(localStorage.getItem(key) || "{}");
-
-  data[project] = (data[project] || 0) + hours;
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
-// Tages- & Projekt-Zusammenfassung laden
-function loadSummary() {
-  const today = new Date().toISOString().slice(0, 10);
-  const data = JSON.parse(localStorage.getItem(`entries_${today}`) || "{}");
-
-  const summaryToday = document.getElementById("summaryToday");
-  const summaryProjects = document.getElementById("summaryProjects");
-  summaryToday.innerHTML = `<h3>Heute (${today}):</h3>`;
-  summaryProjects.innerHTML = "";
-
-  for (const [project, hours] of Object.entries(data)) {
-    const formatted = hours.toFixed(2).replace(".", ",");
-    summaryProjects.innerHTML += `<div><strong>${project}:</strong> ${formatted} h</div>`;
+function stopTimer(project) {
+  const session = activeSessions[project];
+  if (session) {
+    const duration = session.isRunning ? Date.now() - session.startTime : session.pausedTime;
+    const log = { date: new Date(), duration };
+    if (!timeLogs[currentUser]) timeLogs[currentUser] = {};
+    if (!timeLogs[currentUser][project]) timeLogs[currentUser][project] = [];
+    timeLogs[currentUser][project].push(log);
+    delete activeSessions[project];
+    clearInterval(interval);
+    timeDisplay.textContent = "00:00:00";
+    saveState();
+    renderSummary();
   }
 }
 
-// Warnbox für parallele Projekte
-function showWarningBox() {
-  document.getElementById("warningBox").classList.remove("hidden");
-}
+startBtn.addEventListener("click", () => {
+  const projectName = projectInput.value || projectSelect.value;
+  if (!projectName) return alert("Projektname eingeben oder auswählen");
+  if (!projects.includes(projectName)) {
+    projects.push(projectName);
+    updateDropdown();
+  }
+  const otherRunning = Object.entries(activeSessions).some(([p, s]) => p !== projectName && s.isRunning);
+  if (otherRunning && !confirm("Es läuft bereits ein anderes Projekt. Trotzdem fortfahren?")) return;
+  startTimer(projectName);
+});
 
-function confirmParallel(choice) {
-  document.getElementById("warningBox").classList.add("hidden");
-  allowParallel = choice;
-  if (choice) startTimer();
-}
+pauseBtn.addEventListener("click", () => {
+  const projectName = projectInput.value || projectSelect.value;
+  if (projectName) pauseTimer(projectName);
+});
+
+stopBtn.addEventListener("click", () => {
+  const projectName = projectInput.value || projectSelect.value;
+  if (projectName) stopTimer(projectName);
+});
+
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("currentUser");
+  window.location.href = "login.html";
+});
+
+updateDropdown();
+renderSummary();
