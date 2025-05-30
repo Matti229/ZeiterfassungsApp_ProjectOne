@@ -2,36 +2,42 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Projektzeit Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zeiterfassung</title>
   <link rel="stylesheet" href="style.css" />
-  <script defer src="app.js"></script>
 </head>
 <body>
-  <h1>Projektzeit Tracker</h1>
+  <header>
+    <h1>Zeiterfassung</h1>
+    <div id="userInfo">
+      Eingeloggt als: <span id="currentUser"></span>
+      <button id="logoutBtn"><img src="icons/logout.png" alt="Logout" /></button>
+    </div>
+  </header>
 
-  <div>
-    <label for="projectInput">🔹 Neues Projekt:</label>
-    <input type="text" id="projectInput" placeholder="z. B. Projekt X">
-    <button onclick="addProject()">➕ Hinzufügen</button>
+  <main>
+    <section id="projectSection">
+      <h2>Projekt starten</h2>
+      <input type="text" id="projectName" placeholder="Projektname eingeben" />
+      <button id="startBtn"><img src="icons/start.png" alt="Start" /> Start</button>
+      <button id="pauseBtn"><img src="icons/pause.png" alt="Pause" /> Pause</button>
+      <button id="stopBtn"><img src="icons/stop.png" alt="Stop" /> Stop</button>
+    </section>
+
+    <section id="overviewSection">
+      <h2>Zusammenfassung</h2>
+      <div id="summaryToday"></div>
+      <div id="summaryProjects"></div>
+    </section>
+  </main>
+
+  <div id="warningBox" class="hidden">
+    <img src="icons/warning.png" alt="Warnung" />
+    <p>Es läuft bereits ein anderes Projekt.<br />Möchtest du trotzdem fortfahren?</p>
+    <button id="confirmParallel">Ja, trotzdem starten</button>
+    <button id="cancelParallel">Abbrechen</button>
   </div>
 
-  <br>
-
-  <div>
-    <label for="projectSelect">🔽 Projekt wählen:</label>
-    <select id="projectSelect"></select>
-  </div>
-
-  <br>
-
-  <div id="timer">00:00:00</div>
-  <button onclick="startTimer()">▶️ Start</button>
-  <button onclick="pauseTimer()">⏸️ Pause</button>
-  <button onclick="stopTimer()">⏹️ Beenden</button>
-  <button onclick="exportCSV()">📤 Daten exportieren</button>
-
-  <h2>Zeiteinträge</h2>
-  <ul id="logList"></ul>
+  <script src="app.js"></script>
 </body>
 </html>
