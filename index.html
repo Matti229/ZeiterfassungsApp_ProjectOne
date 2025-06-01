@@ -4,83 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZeiterfassungsApp</title>
-  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/excellentexport@3.8.0/dist/excellentexport.min.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Zeiterfassung</h1>
-    <button id="logoutBtn"><img src="icons/logout.png" alt="Logout" /></button>
-  </header>
+  <div class="container">
+    <h1>ZeiterfassungsApp</h1>
 
-  <main>
-    <section id="projectSelection">
-      <input type="text" id="projectNameInput" placeholder="Neues Projekt eingeben" />
+    <div class="project-section">
+      <input type="text" id="newProjectInput" placeholder="Neues Projekt" />
       <button id="addProjectBtn">Hinzufügen</button>
       <select id="projectDropdown">
-        <option value="">— Projekt auswählen —</option>
+        <option value="">-- Projekt wählen --</option>
       </select>
-    </section>
+    </div>
 
-    <section id="controls">
-      <button id="startBtn"><img src="icons/start.png" alt="Start" /></button>
-      <button id="pauseBtn"><img src="icons/pause.png" alt="Pause" /></button>
-      <button id="stopBtn"><img src="icons/stop.png" alt="Stopp" /></button>
-    </section>
-
-    <section id="zeitAnzeige">
+    <div class="timer-section">
       <div id="liveTimer">00:00:00</div>
-      <div id="messageArea"></div>
-    </section>
+      <div class="buttons">
+        <button id="startBtn" title="Start">
+          <img src="icons/start.png" alt="Start" />
+        </button>
+        <button id="pauseBtn" title="Pause">
+          <img src="icons/pause.png" alt="Pause" />
+        </button>
+        <button id="stopBtn" title="Stop">
+          <img src="icons/stop.png" alt="Stop" />
+        </button>
+      </div>
+    </div>
 
-    <section id="zusammenfassung">
-      <h2>Zusammenfassung</h2>
-      <table id="summaryTable">
-        <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Projekt</th>
-            <th>Zeit (h)</th>
-          </tr>
-        </thead>
-        <tbody id="summaryBody"></tbody>
-      </table>
-      <button id="exportBtn" onclick="ExcellentExport.convert({ anchor: this, filename: 'zeiterfassung', format: 'xlsx' }, [{ name: 'Zeiten', from: { table: 'summaryTable' } }])">Exportieren (Excel)</button>
-    </section>
-  </main>
+    <div id="messageArea" class="message"></div>
 
-  <script src="auth.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const projectInput = document.getElementById("projectNameInput");
-      const projectDropdown = document.getElementById("projectDropdown");
-      const addProjectBtn = document.getElementById("addProjectBtn");
+    <h2>Zusammenfassung</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Projekt</th>
+          <th>Stunden</th>
+        </tr>
+      </thead>
+      <tbody id="summaryBody"></tbody>
+    </table>
+  </div>
 
-      function updateDropdown(projects) {
-        projectDropdown.innerHTML = '<option value="">— Projekt auswählen —</option>';
-        projects.forEach(proj => {
-          const option = document.createElement("option");
-          option.value = proj;
-          option.textContent = proj;
-          projectDropdown.appendChild(option);
-        });
-      }
-
-      const savedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-      updateDropdown(savedProjects);
-
-      addProjectBtn.addEventListener("click", () => {
-        const newProject = projectInput.value.trim();
-        if (newProject && !savedProjects.includes(newProject)) {
-          savedProjects.push(newProject);
-          localStorage.setItem("projects", JSON.stringify(savedProjects));
-          updateDropdown(savedProjects);
-          projectInput.value = "";
-        }
-      });
-    });
-  </script>
   <script src="app.js"></script>
 </body>
 </html>
