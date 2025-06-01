@@ -1,150 +1,125 @@
-/* style.css */
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Helvetica Neue", sans-serif;
-}
-
 body {
-  background: #f4f4f4;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 1rem;
+  background-color: #f4f4f4;
   color: #333;
-  padding: 20px;
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #2c3e50;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-header h1 {
-  font-size: 1.8em;
-}
-
-header button {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-header img {
-  width: 30px;
-  height: 30px;
-}
-
-main {
+.container {
   max-width: 800px;
-  margin: 0 auto;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin: auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-#projectSelection {
+h1, h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+form,
+.controls {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
 
-#projectNameInput,
-#projectDropdown {
-  padding: 10px;
-  font-size: 1em;
-  border-radius: 6px;
+input[type="text"],
+select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
   border: 1px solid #ccc;
+  flex: 1;
+  min-width: 200px;
 }
 
-#controls {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-
-#controls button {
-  background: none;
+button {
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
   border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
   cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-#controls img {
-  width: 50px;
-  height: 50px;
-  transition: transform 0.2s;
-}
-
-#controls img:hover {
-  transform: scale(1.1);
+button:hover {
+  background-color: #0056b3;
 }
 
 #liveTimer {
-  font-size: 2em;
+  font-size: 2rem;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 }
 
-#messageArea {
-  text-align: center;
-  font-size: 0.9em;
-  color: #888;
-}
-
-#zusammenfassung h2 {
-  margin-bottom: 10px;
-}
-
-#summaryTable {
+table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 10px;
+  margin-top: 1rem;
 }
 
-#summaryTable th,
-#summaryTable td {
+th, td {
+  padding: 0.75rem;
   border: 1px solid #ccc;
-  padding: 8px 12px;
-  text-align: left;
+  text-align: center;
 }
 
-#summaryTable th {
-  background-color: #ecf0f1;
-}
-
-#exportBtn {
-  display: inline-block;
-  padding: 10px 15px;
-  background: #27ae60;
+th {
+  background-color: #007bff;
   color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background 0.3s;
 }
 
-#exportBtn:hover {
-  background: #219150;
+.message {
+  color: red;
+  text-align: center;
+  margin-bottom: 0.5rem;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-  #controls {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
+/* === Icon Buttons === */
+#startBtn::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-image: url('icons/start.png');
+  background-size: cover;
+}
 
-  #controls img {
-    width: 40px;
-    height: 40px;
-  }
+#pauseBtn::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-image: url('icons/pause.png');
+  background-size: cover;
+}
+
+#stopBtn::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-image: url('icons/stop.png');
+  background-size: cover;
+}
+
+#logoutBtn::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-image: url('icons/logout.png');
+  background-size: cover;
 }

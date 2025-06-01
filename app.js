@@ -1,8 +1,8 @@
 let timerInterval;
 let startTime;
-let currentProject = null;
-let isRunning = false;
 let elapsed = 0;
+let isRunning = false;
+let currentProject = null;
 
 const liveTimer = document.getElementById("liveTimer");
 const startBtn = document.getElementById("startBtn");
@@ -28,8 +28,8 @@ function formatToDecimalHours(ms) {
 
 function updateLiveDisplay() {
   const now = new Date();
-  elapsed = now - startTime;
-  liveTimer.textContent = formatTime(elapsed);
+  const duration = now - startTime + elapsed;
+  liveTimer.textContent = formatTime(duration);
 }
 
 function loadSummary() {
@@ -83,6 +83,9 @@ addProjectBtn.addEventListener("click", () => {
   if (name) {
     addProject(name);
     newProjectInput.value = "";
+    messageArea.textContent = "";
+  } else {
+    messageArea.textContent = "Bitte einen Projektnamen eingeben.";
   }
 });
 
@@ -92,31 +95,37 @@ startBtn.addEventListener("click", () => {
     messageArea.textContent = "Bitte zuerst ein Projekt auswählen.";
     return;
   }
+
   if (isRunning) {
     const confirmParallel = confirm("Ein anderes Projekt läuft bereits. Möchten Sie ein weiteres gleichzeitig starten?");
     if (!confirmParallel) return;
   }
+
   messageArea.textContent = "";
   currentProject = selected;
   startTime = new Date();
   timerInterval = setInterval(updateLiveDisplay, 1000);
   isRunning = true;
+  elapsed = 0;
 });
 
 pauseBtn.addEventListener("click", () => {
   if (!isRunning) return;
   clearInterval(timerInterval);
+  const now = new Date();
+  elapsed += now - startTime;
   isRunning = false;
 });
 
 stopBtn.addEventListener("click", () => {
   if (!isRunning) return;
   clearInterval(timerInterval);
-  isRunning = false;
-  updateLiveDisplay();
-  saveEntry(currentProject, elapsed);
-  elapsed = 0;
+  const now = new Date();
+  const totalDuration = now - startTime + elapsed;
+  saveEntry(currentProject, totalDuration);
   liveTimer.textContent = "00:00:00";
+  isRunning = false;
+  elapsed = 0;
 });
 
 window.addEventListener("load", () => {
