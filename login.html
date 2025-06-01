@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login – ZeiterfassungsApp</title>
+  <title>Login</title>
   <link rel="stylesheet" href="style.css" />
+  <script defer src="auth.js"></script>
 </head>
 <body>
-  <main class="auth-container">
+  <main class="login-container">
     <h1>Login</h1>
-    <form id="loginForm">
-      <input type="text" id="loginUsername" placeholder="Benutzername" required />
-      <input type="password" id="loginPassword" placeholder="Passwort" required />
-      <button type="submit">Einloggen</button>
-    </form>
-    <p>Noch kein Konto? <a href="register.html">Registrieren</a></p>
+    <input type="text" id="username" placeholder="Benutzername" />
+    <input type="password" id="password" placeholder="Passwort" />
+    <button onclick="login(document.getElementById('username').value, document.getElementById('password').value)">Login</button>
+    <p>Noch keinen Account? <a href="register.html">Registrieren</a></p>
   </main>
-
-  <script src="auth.js"></script>
 </body>
 </html>

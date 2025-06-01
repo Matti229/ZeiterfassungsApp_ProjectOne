@@ -1,119 +1,167 @@
-body {
-  font-family: Arial, sans-serif;
+/* Reset und Grundlayout */
+* {
   margin: 0;
   padding: 0;
-  background-color: #f8f8f8;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
 }
 
+body {
+  background-color: #f2f2f2;
+  padding: 1rem;
+  color: #333;
+}
+
+/* Kopfzeile */
 header {
-  background-color: #0066cc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1976d2;
   color: white;
   padding: 1rem;
-  text-align: center;
-}
-
-main {
-  max-width: 800px;
-  margin: 2rem auto;
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.project-control {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
+  border-radius: 0.5rem;
   margin-bottom: 1rem;
 }
 
-.project-control input,
-.project-control select,
-.project-control button {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+header h1 {
+  font-size: 1.5rem;
 }
 
-.project-control button {
-  background-color: #0066cc;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.project-control button:hover {
-  background-color: #004c99;
-}
-
-.project-control img {
-  height: 24px;
-  width: 24px;
-  vertical-align: middle;
-}
-
-.message {
-  color: red;
-  margin: 0.5rem 0;
-}
-
-.live-timers {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.project-timer {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background-color: #eef3f9;
-  padding: 1rem;
-  border-radius: 6px;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
-}
-
-.project-timer h3 {
-  margin: 0;
-  flex: 1;
-}
-
-.project-timer span {
-  font-size: 1.2rem;
-  font-weight: bold;
-  width: 100px;
-  text-align: center;
-}
-
-.project-timer button {
+.logout-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
 }
 
-.project-timer button img {
+.logout-btn img {
+  width: 32px;
+  height: 32px;
+}
+
+/* Hauptbereich */
+main {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.project-input,
+.project-select {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+input[type="text"],
+select {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Nachrichtenbereich */
+.message {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Aktive Timer */
+#liveTimerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.timer-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.timer-info {
+  flex-grow: 1;
+  font-size: 1.1rem;
+}
+
+.timer-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.timer-buttons button img {
   width: 24px;
   height: 24px;
 }
 
-.summary table {
+/* Zusammenfassung */
+.summary h2 {
+  margin-bottom: 0.5rem;
+}
+
+table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
-.summary th,
-.summary td {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  text-align: center;
+th,
+td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
-.summary th {
+th {
   background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+#exportBtn {
+  margin-top: 1rem;
+  float: right;
+  background-color: transparent;
+}
+
+#exportBtn img {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .project-input,
+  .project-select {
+    flex-direction: column;
+  }
+
+  .timer-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timer-buttons {
+    align-self: flex-end;
+  }
 }

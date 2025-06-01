@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registrieren – ZeiterfassungsApp</title>
+  <title>Registrieren</title>
   <link rel="stylesheet" href="style.css" />
+  <script defer src="auth.js"></script>
 </head>
 <body>
-  <main class="auth-container">
+  <main class="login-container">
     <h1>Registrieren</h1>
-    <form id="registerForm">
-      <input type="text" id="registerUsername" placeholder="Benutzername" required />
-      <input type="password" id="registerPassword" placeholder="Passwort" required />
-      <button type="submit">Registrieren</button>
-    </form>
+    <input type="text" id="regUsername" placeholder="Benutzername" />
+    <input type="password" id="regPassword" placeholder="Passwort" />
+    <button onclick="register(document.getElementById('regUsername').value, document.getElementById('regPassword').value)">Registrieren</button>
     <p>Bereits registriert? <a href="login.html">Login</a></p>
   </main>
-
-  <script src="auth.js"></script>
 </body>
 </html>

@@ -4,50 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZeiterfassungsApp</title>
-
-  <!-- Manifest & Theme -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0066cc" />
-
-  <!-- Style & Icon -->
   <link rel="stylesheet" href="style.css" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
-
-  <!-- Script -->
+  <script defer src="auth.js"></script>
   <script defer src="app.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log("✅ Service Worker registriert:", reg.scope))
-        .catch(err => console.error("❌ Fehler beim Service Worker:", err));
-    }
-  </script>
 </head>
 <body>
+  <script>
+    redirectToLoginIfNotLoggedIn();
+  </script>
+
   <header>
     <h1>ZeiterfassungsApp</h1>
+    <button onclick="logout()" class="logout-btn">
+      <img src="icons/logout.png" alt="Logout">
+    </button>
   </header>
 
   <main>
-    <section class="project-control">
-      <input type="text" id="newProjectInput" placeholder="Neues Projekt hinzufügen" />
-      <button id="addProjectBtn">Projekt hinzufügen</button>
+    <div class="project-input">
+      <input type="text" id="newProjectInput" placeholder="Neues Projekt" />
+      <button id="addProjectBtn">
+        <img src="icons/add.png" alt="Hinzufügen">
+      </button>
+    </div>
 
-      <select id="projectDropdown">
-        <option value="">-- Projekt wählen --</option>
-      </select>
+    <div class="project-select">
+      <select id="projectDropdown"></select>
+      <button id="startBtn">
+        <img src="icons/start.png" alt="Start">
+      </button>
+    </div>
 
-      <div class="button-group">
-        <button id="startBtn"><img src="icons/start.png" alt="Start" /></button>
-        <button id="exportBtn">Exportieren</button>
-      </div>
+    <div id="messageArea" class="message"></div>
 
-      <div id="messageArea" class="message"></div>
-    </section>
+    <section id="liveTimerContainer"></section>
 
-    <section id="liveTimerContainer" class="timer-list"></section>
-
-    <section class="summary-section">
+    <section class="summary">
       <h2>Zusammenfassung</h2>
       <table>
         <thead>
@@ -59,11 +51,10 @@
         </thead>
         <tbody id="summaryBody"></tbody>
       </table>
+      <button id="exportBtn">
+        <img src="icons/export.png" alt="Export">
+      </button>
     </section>
   </main>
-
-  <footer>
-    <p>© 2025 ZeiterfassungsApp</p>
-  </footer>
 </body>
 </html>
