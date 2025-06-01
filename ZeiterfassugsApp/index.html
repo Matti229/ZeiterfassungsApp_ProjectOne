@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeiterfassungsApp</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Zeiterfassung</h1>
+    <button id="logoutBtn"><img src="icons/logout.png" alt="Logout" /></button>
+  </header>
+
+  <main>
+    <section id="projectSelection">
+      <input type="text" id="projectNameInput" placeholder="Neues Projekt eingeben" />
+      <select id="projectDropdown">
+        <option value="">— Projekt auswählen —</option>
+      </select>
+    </section>
+
+    <section id="controls">
+      <button id="startBtn"><img src="icons/start.png" alt="Start" /></button>
+      <button id="pauseBtn"><img src="icons/pause.png" alt="Pause" /></button>
+      <button id="stopBtn"><img src="icons/stop.png" alt="Stopp" /></button>
+    </section>
+
+    <section id="zeitAnzeige">
+      <div id="liveTimer">00:00:00</div>
+      <div id="messageArea"></div>
+    </section>
+
+    <section id="zusammenfassung">
+      <h2>Zusammenfassung</h2>
+      <div id="summary"></div>
+      <button id="exportBtn">Exportieren (Excel)</button>
+    </section>
+  </main>
+
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
