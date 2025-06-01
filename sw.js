@@ -1,42 +1,50 @@
-const CACHE_NAME = "zeiterfassung-v1";
-const urlsToCache = [
-  "/ZeiterfassungsApp_ProjectOne/",
-  "/ZeiterfassungsApp_ProjectOne/index.html",
-  "/ZeiterfassungsApp_ProjectOne/style.css",
-  "/ZeiterfassungsApp_ProjectOne/app.js",
-  "/ZeiterfassungsApp_ProjectOne/icons/start.png",
-  "/ZeiterfassungsApp_ProjectOne/icons/pause.png",
-  "/ZeiterfassungsApp_ProjectOne/icons/stop.png",
-  "/ZeiterfassungsApp_ProjectOne/icons/logout.png",
-  "/ZeiterfassungsApp_ProjectOne/manifest.json"
+const cacheName = 'zeiterfassung-v1';
+const filesToCache = [
+  './',
+  './index.html',
+  './style.css',
+  './app.js',
+  './auth.js',
+  './login.html',
+  './register.html',
+  './manifest.json',
+  './icons/start.png',
+  './icons/pause.png',
+  './icons/stop.png',
+  './icons/logout.png',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
+// Install event
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(cacheName).then((cache) => {
+      return cache.addAll(filesToCache);
     })
   );
   self.skipWaiting();
 });
 
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys
-          .filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-      );
-    })
+// Activate event
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keyList) =>
+      Promise.all(
+        keyList.map((key) => {
+          if (key !== cacheName) return caches.delete(key);
+        })
+      )
+    )
   );
   self.clients.claim();
 });
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
+// Fetch event
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    caches.match(e.request).then((response) => {
+      return response || fetch(e.request);
     })
   );
 });

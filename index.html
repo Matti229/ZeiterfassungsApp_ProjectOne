@@ -4,57 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZeiterfassungsApp</title>
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <script defer src="auth.js"></script>
-  <script defer src="app.js"></script>
+  <link rel="icon" href="icons/icon-192.png" />
 </head>
 <body>
-  <script>
-    redirectToLoginIfNotLoggedIn();
-  </script>
-
   <header>
-    <h1>ZeiterfassungsApp</h1>
-    <button onclick="logout()" class="logout-btn">
-      <img src="icons/logout.png" alt="Logout">
+    <h1>Zeiterfassung</h1>
+    <button id="logoutBtn" title="Logout">
+      <img src="icons/logout.png" alt="Logout" />
     </button>
   </header>
 
   <main>
-    <div class="project-input">
-      <input type="text" id="newProjectInput" placeholder="Neues Projekt" />
-      <button id="addProjectBtn">
-        <img src="icons/add.png" alt="Hinzufügen">
+    <section id="projectManager">
+      <input type="text" id="newProjectInput" placeholder="Neues Projekt eingeben..." />
+      <button id="addProjectBtn">Projekt hinzufügen</button>
+
+      <select id="projectDropdown">
+        <option value="">Projekt wählen</option>
+      </select>
+
+      <button id="startBtn" class="icon-button" title="Start">
+        <img src="icons/start.png" alt="Start" />
       </button>
-    </div>
 
-    <div class="project-select">
-      <select id="projectDropdown"></select>
-      <button id="startBtn">
-        <img src="icons/start.png" alt="Start">
-      </button>
-    </div>
+      <div id="messageArea"></div>
+    </section>
 
-    <div id="messageArea" class="message"></div>
+    <section id="liveTimers">
+      <h2>Aktive Projekte</h2>
+      <div id="liveTimerContainer"></div>
+    </section>
 
-    <section id="liveTimerContainer"></section>
-
-    <section class="summary">
+    <section id="summary">
       <h2>Zusammenfassung</h2>
       <table>
         <thead>
-          <tr>
-            <th>Datum</th>
-            <th>Projekt</th>
-            <th>Stunden</th>
-          </tr>
+          <tr><th>Datum</th><th>Projekt</th><th>Stunden</th></tr>
         </thead>
         <tbody id="summaryBody"></tbody>
       </table>
-      <button id="exportBtn">
-        <img src="icons/export.png" alt="Export">
-      </button>
+      <button id="exportBtn">Exportieren (CSV)</button>
     </section>
   </main>
+
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

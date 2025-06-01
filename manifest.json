@@ -1,11 +1,10 @@
 {
-  "name": "ZeiterfassungsApp",
+  "name": "ZeiterfassungsApp ProjectOne",
   "short_name": "Zeiterfassung",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0066cc",
-  "orientation": "portrait",
+  "background_color": "#f8f9fa",
+  "theme_color": "#0d6efd",
   "icons": [
     {
       "src": "icons/icon-192.png",

@@ -11,7 +11,7 @@ const summaryBody = document.getElementById('summaryBody');
 const exportBtn = document.getElementById('exportBtn');
 const messageArea = document.getElementById('messageArea');
 
-const username = localStorage.getItem('username');
+const username = localStorage.getItem('username') || 'gast';
 
 // Load stored data
 let storedProjects = JSON.parse(localStorage.getItem(`${username}_projects`)) || [];
@@ -42,7 +42,10 @@ startBtn.addEventListener('click', () => {
 
   messageArea.textContent = '';
 
-  const start = Date.now();
+  let start = Date.now();
+  let elapsed = 0;
+  let running = true;
+
   const timerElement = document.createElement('div');
   timerElement.className = 'timer-card';
 
@@ -62,9 +65,6 @@ startBtn.addEventListener('click', () => {
 
   timerElement.append(timerInfo, btnGroup);
   liveTimerContainer.appendChild(timerElement);
-
-  let elapsed = 0;
-  let running = true;
 
   const interval = setInterval(() => {
     if (running) {
