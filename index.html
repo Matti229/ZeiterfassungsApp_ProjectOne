@@ -17,6 +17,7 @@
   <main>
     <section id="projectSelection">
       <input type="text" id="projectNameInput" placeholder="Neues Projekt eingeben" />
+      <button id="addProjectBtn">Hinzufügen</button>
       <select id="projectDropdown">
         <option value="">— Projekt auswählen —</option>
       </select>
@@ -50,6 +51,36 @@
   </main>
 
   <script src="auth.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const projectInput = document.getElementById("projectNameInput");
+      const projectDropdown = document.getElementById("projectDropdown");
+      const addProjectBtn = document.getElementById("addProjectBtn");
+
+      function updateDropdown(projects) {
+        projectDropdown.innerHTML = '<option value="">— Projekt auswählen —</option>';
+        projects.forEach(proj => {
+          const option = document.createElement("option");
+          option.value = proj;
+          option.textContent = proj;
+          projectDropdown.appendChild(option);
+        });
+      }
+
+      const savedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
+      updateDropdown(savedProjects);
+
+      addProjectBtn.addEventListener("click", () => {
+        const newProject = projectInput.value.trim();
+        if (newProject && !savedProjects.includes(newProject)) {
+          savedProjects.push(newProject);
+          localStorage.setItem("projects", JSON.stringify(savedProjects));
+          updateDropdown(savedProjects);
+          projectInput.value = "";
+        }
+      });
+    });
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

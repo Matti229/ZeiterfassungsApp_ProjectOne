@@ -1,177 +1,125 @@
-// app.js
+let timerInterval;
+let startTime;
+let currentProject = null;
+let isRunning = false;
+let elapsed = 0;
 
-let currentUser = localStorage.getItem("loggedInUser");
-if (!currentUser) {
-  window.location.href = "login.html";
-}
-
-let startTime = null;
-let pauseStart = null;
-let pausedDuration = 0;
-let timerInterval = null;
-let currentProject = "";
-let activeEntries = [];
-let allProjects = new Set(JSON.parse(localStorage.getItem(`${currentUser}_projects`) || "[]"));
-
-// DOM Elements
-const projectInput = document.getElementById("projectNameInput");
-const projectDropdown = document.getElementById("projectDropdown");
+const liveTimer = document.getElementById("liveTimer");
 const startBtn = document.getElementById("startBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const stopBtn = document.getElementById("stopBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const liveTimer = document.getElementById("liveTimer");
-const messageArea = document.getElementById("messageArea");
+const projectDropdown = document.getElementById("projectDropdown");
 const summaryBody = document.getElementById("summaryBody");
+const messageArea = document.getElementById("messageArea");
+const newProjectInput = document.getElementById("newProjectInput");
+const addProjectBtn = document.getElementById("addProjectBtn");
 
-// Load Projects
-function loadProjectDropdown() {
-  projectDropdown.innerHTML = '<option value="">— Projekt auswählen —</option>';
-  allProjects.forEach((p) => {
+function formatTime(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+function formatToDecimalHours(ms) {
+  return (ms / 3600000).toFixed(2);
+}
+
+function updateLiveDisplay() {
+  const now = new Date();
+  elapsed = now - startTime;
+  liveTimer.textContent = formatTime(elapsed);
+}
+
+function loadSummary() {
+  const data = JSON.parse(localStorage.getItem("timeData") || "[]");
+  summaryBody.innerHTML = "";
+  data.forEach(entry => {
+    const row = document.createElement("tr");
+    row.innerHTML = `<td>${entry.date}</td><td>${entry.project}</td><td>${entry.hours}</td>`;
+    summaryBody.appendChild(row);
+  });
+}
+
+function saveEntry(project, durationMs) {
+  const timeData = JSON.parse(localStorage.getItem("timeData") || "[]");
+  const today = new Date().toISOString().split("T")[0];
+  const hours = parseFloat(formatToDecimalHours(durationMs));
+  const existing = timeData.find(e => e.project === project && e.date === today);
+
+  if (existing) {
+    existing.hours = (parseFloat(existing.hours) + hours).toFixed(2);
+  } else {
+    timeData.push({ date: today, project, hours: hours.toFixed(2) });
+  }
+  localStorage.setItem("timeData", JSON.stringify(timeData));
+  loadSummary();
+}
+
+function loadProjects() {
+  const projects = JSON.parse(localStorage.getItem("projects") || "[]");
+  projectDropdown.innerHTML = '<option value="">-- Projekt wählen --</option>';
+  projects.forEach(p => {
     const opt = document.createElement("option");
     opt.value = p;
     opt.textContent = p;
     projectDropdown.appendChild(opt);
   });
 }
-loadProjectDropdown();
 
-// Handle project input
-projectInput.addEventListener("change", () => {
-  const name = projectInput.value.trim();
-  if (name && !allProjects.has(name)) {
-    allProjects.add(name);
-    localStorage.setItem(`${currentUser}_projects`, JSON.stringify([...allProjects]));
-    loadProjectDropdown();
+function addProject(name) {
+  if (!name) return;
+  let projects = JSON.parse(localStorage.getItem("projects") || "[]");
+  if (!projects.includes(name)) {
+    projects.push(name);
+    localStorage.setItem("projects", JSON.stringify(projects));
+    loadProjects();
+  }
+}
+
+addProjectBtn.addEventListener("click", () => {
+  const name = newProjectInput.value.trim();
+  if (name) {
+    addProject(name);
+    newProjectInput.value = "";
   }
 });
 
-// Get selected project
-function getSelectedProject() {
-  return projectInput.value.trim() || projectDropdown.value;
-}
-
-// Timer functions
-function formatTime(ms) {
-  const totalSeconds = Math.floor(ms / 1000);
-  const h = Math.floor(totalSeconds / 3600).toString().padStart(2, "0");
-  const m = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, "0");
-  const s = (totalSeconds % 60).toString().padStart(2, "0");
-  return `${h}:${m}:${s}`;
-}
-
-function convertToDecimalHours(ms) {
-  return (ms / 3600000).toFixed(2);
-}
-
-function updateLiveDisplay() {
-  if (startTime) {
-    const now = new Date();
-    const elapsed = now - startTime - pausedDuration;
-    liveTimer.textContent = formatTime(elapsed);
-  }
-}
-
-// Start
 startBtn.addEventListener("click", () => {
-  if (startTime) {
-    alert("Ein Projekt läuft bereits.");
+  const selected = projectDropdown.value;
+  if (!selected) {
+    messageArea.textContent = "Bitte zuerst ein Projekt auswählen.";
     return;
   }
-
-  const project = getSelectedProject();
-  if (!project) {
-    alert("Bitte ein Projekt auswählen oder eingeben.");
-    return;
+  if (isRunning) {
+    const confirmParallel = confirm("Ein anderes Projekt läuft bereits. Möchten Sie ein weiteres gleichzeitig starten?");
+    if (!confirmParallel) return;
   }
-
-  if (activeEntries.length > 0 && !confirm("Ein anderes Projekt läuft bereits. Trotzdem starten?")) {
-    return;
-  }
-
-  currentProject = project;
+  messageArea.textContent = "";
+  currentProject = selected;
   startTime = new Date();
-  pausedDuration = 0;
   timerInterval = setInterval(updateLiveDisplay, 1000);
-
-  activeEntries.push({ project, startTime });
-  messageArea.textContent = `Projekt "${project}" gestartet.`;
+  isRunning = true;
 });
 
-// Pause
 pauseBtn.addEventListener("click", () => {
-  if (!startTime || pauseStart) return;
-  pauseStart = new Date();
+  if (!isRunning) return;
   clearInterval(timerInterval);
-  messageArea.textContent = `Pausiert.`;
+  isRunning = false;
 });
 
-// Resume (same button)
-pauseBtn.addEventListener("dblclick", () => {
-  if (!pauseStart) return;
-  pausedDuration += new Date() - pauseStart;
-  pauseStart = null;
-  timerInterval = setInterval(updateLiveDisplay, 1000);
-  messageArea.textContent = `Fortgesetzt.`;
-});
-
-// Stop
 stopBtn.addEventListener("click", () => {
-  if (!startTime) return;
-
-  const endTime = new Date();
-  const duration = endTime - startTime - pausedDuration;
-  const dateKey = new Date().toISOString().split("T")[0];
-
-  // Load existing data
-  const dataKey = `${currentUser}_data`;
-  const storedData = JSON.parse(localStorage.getItem(dataKey) || "{}");
-
-  if (!storedData[dateKey]) {
-    storedData[dateKey] = {};
-  }
-
-  if (!storedData[dateKey][currentProject]) {
-    storedData[dateKey][currentProject] = 0;
-  }
-
-  storedData[dateKey][currentProject] += duration;
-  localStorage.setItem(dataKey, JSON.stringify(storedData));
-
+  if (!isRunning) return;
   clearInterval(timerInterval);
+  isRunning = false;
+  updateLiveDisplay();
+  saveEntry(currentProject, elapsed);
+  elapsed = 0;
   liveTimer.textContent = "00:00:00";
-  messageArea.textContent = `Gestoppt: ${currentProject} (${convertToDecimalHours(duration)} h)`;
-
-  // Reset
-  startTime = null;
-  pauseStart = null;
-  pausedDuration = 0;
-  activeEntries = [];
-
-  updateSummary();
 });
 
-// Zusammenfassung laden
-function updateSummary() {
-  const data = JSON.parse(localStorage.getItem(`${currentUser}_data`) || "{}");
-  summaryBody.innerHTML = "";
-
-  Object.entries(data).forEach(([date, projects]) => {
-    Object.entries(projects).forEach(([project, time]) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${date}</td>
-        <td>${project}</td>
-        <td>${convertToDecimalHours(time)}</td>
-      `;
-      summaryBody.appendChild(tr);
-    });
-  });
-}
-updateSummary();
-
-// Logout
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("loggedInUser");
-  window.location.href = "login.html";
+window.addEventListener("load", () => {
+  loadProjects();
+  loadSummary();
 });
