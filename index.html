@@ -2,51 +2,68 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Zeiterfassungs-App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeiterfassungsApp</title>
+
+  <!-- Manifest & Theme -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0066cc" />
+
+  <!-- Style & Icon -->
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+
+  <!-- Script -->
+  <script defer src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log("✅ Service Worker registriert:", reg.scope))
+        .catch(err => console.error("❌ Fehler beim Service Worker:", err));
+    }
+  </script>
 </head>
 <body>
-  <div class="container">
-    <h1>Projekt-Zeiterfassung</h1>
+  <header>
+    <h1>ZeiterfassungsApp</h1>
+  </header>
 
-    <div class="project-control">
-      <input type="text" id="newProjectInput" placeholder="Neues Projekt..." />
-      <button id="addProjectBtn">Hinzufügen</button>
+  <main>
+    <section class="project-control">
+      <input type="text" id="newProjectInput" placeholder="Neues Projekt hinzufügen" />
+      <button id="addProjectBtn">Projekt hinzufügen</button>
 
       <select id="projectDropdown">
         <option value="">-- Projekt wählen --</option>
       </select>
 
-      <button id="startBtn">
-        <img src="icons/start.png" alt="Start" class="icon" />
-        Start
-      </button>
-    </div>
+      <div class="button-group">
+        <button id="startBtn"><img src="icons/start.png" alt="Start" /></button>
+        <button id="exportBtn">Exportieren</button>
+      </div>
 
-    <div id="messageArea" class="message"></div>
+      <div id="messageArea" class="message"></div>
+    </section>
 
-    <h2>Aktive Projekte</h2>
-    <div id="liveTimerContainer"></div>
+    <section id="liveTimerContainer" class="timer-list"></section>
 
-    <h2>Zusammenfassung</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Datum</th>
-          <th>Projekt</th>
-          <th>Stunden</th>
-        </tr>
-      </thead>
-      <tbody id="summaryBody"></tbody>
-    </table>
+    <section class="summary-section">
+      <h2>Zusammenfassung</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Projekt</th>
+            <th>Stunden</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+    </section>
+  </main>
 
-    <button id="exportBtn">
-      <img src="icons/export.png" alt="Export" class="icon" />
-      Exportieren als CSV
-    </button>
-  </div>
-
-  <script src="app.js"></script>
+  <footer>
+    <p>© 2025 ZeiterfassungsApp</p>
+  </footer>
 </body>
 </html>

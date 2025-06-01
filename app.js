@@ -74,6 +74,9 @@ function addProject(name) {
 }
 
 function createProjectDisplay(project) {
+  const existing = document.getElementById(`project-${project}`);
+  if (existing) return;
+
   const div = document.createElement("div");
   div.className = "project-timer";
   div.id = `project-${project}`;
@@ -86,11 +89,11 @@ function createProjectDisplay(project) {
   timer.textContent = "00:00:00";
 
   const pauseBtn = document.createElement("button");
-  pauseBtn.textContent = "Pause";
+  pauseBtn.innerHTML = '<img src="icons/pause.png" alt="Pause">';
   pauseBtn.addEventListener("click", () => pauseProject(project));
 
   const stopBtn = document.createElement("button");
-  stopBtn.textContent = "Stop";
+  stopBtn.innerHTML = '<img src="icons/stop.png" alt="Stop">';
   stopBtn.addEventListener("click", () => stopProject(project));
 
   div.appendChild(title);
@@ -108,13 +111,13 @@ function startProject(project) {
   }
 
   if (!projects[project]) {
+    createProjectDisplay(project);
     projects[project] = {
       startTime: new Date(),
       interval: setInterval(() => updateProjectTimer(project), 1000),
       elapsed: 0,
       isRunning: true
     };
-    createProjectDisplay(project);
   } else if (!projects[project].isRunning) {
     projects[project].startTime = new Date(new Date() - projects[project].elapsed);
     projects[project].interval = setInterval(() => updateProjectTimer(project), 1000);
@@ -151,6 +154,19 @@ addProjectBtn.addEventListener("click", () => {
 document.getElementById("startBtn").addEventListener("click", () => {
   const selected = projectDropdown.value;
   startProject(selected);
+});
+
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const data = JSON.parse(localStorage.getItem("timeData") || "[]");
+  let csv = "Datum,Projekt,Stunden\n";
+  data.forEach(entry => {
+    csv += `${entry.date},${entry.project},${entry.hours}\n`;
+  });
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "zeiterfassung.csv";
+  link.click();
 });
 
 window.addEventListener("load", () => {
