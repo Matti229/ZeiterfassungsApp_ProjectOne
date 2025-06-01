@@ -1,125 +1,121 @@
 body {
   font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
   margin: 0;
-  padding: 1rem;
-  background-color: #f4f4f4;
-  color: #333;
+  padding: 20px;
 }
 
 .container {
   max-width: 800px;
-  margin: auto;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
 
 h1, h2 {
   text-align: center;
-  margin-bottom: 1rem;
+  color: #333;
 }
 
-form,
-.controls {
+.project-control {
   display: flex;
-  gap: 0.5rem;
   flex-wrap: wrap;
+  gap: 10px;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
 }
 
-input[type="text"],
-select {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 4px;
+.project-control input,
+.project-control select,
+.project-control button {
+  padding: 8px 12px;
+  font-size: 16px;
   border: 1px solid #ccc;
-  flex: 1;
-  min-width: 200px;
+  border-radius: 6px;
 }
 
 button {
-  padding: 0.5rem 1.5rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  transition: background-color 0.2s ease;
 }
 
 button:hover {
   background-color: #0056b3;
 }
 
-#liveTimer {
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-th, td {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  text-align: center;
-}
-
-th {
-  background-color: #007bff;
-  color: white;
+button img.icon {
+  width: 20px;
+  height: 20px;
 }
 
 .message {
   color: red;
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 10px;
 }
 
-/* === Icon Buttons === */
-#startBtn::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-image: url('icons/start.png');
-  background-size: cover;
+.project-timer {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
 }
 
-#pauseBtn::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-image: url('icons/pause.png');
-  background-size: cover;
+.project-timer h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #222;
 }
 
-#stopBtn::before {
-  content: "";
+.project-timer span {
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-image: url('icons/stop.png');
-  background-size: cover;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 10px;
 }
 
-#logoutBtn::before {
-  content: "";
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-image: url('icons/logout.png');
-  background-size: cover;
+.project-timer button {
+  margin-right: 5px;
+  background-color: #28a745;
+}
+
+.project-timer button:nth-child(4) {
+  background-color: #dc3545;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+#exportBtn {
+  display: flex;
+  align-items: center;
+  margin: 20px auto 0 auto;
+  padding: 10px 20px;
+  background-color: #17a2b8;
+  font-size: 16px;
+  border-radius: 6px;
 }
