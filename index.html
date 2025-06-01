@@ -6,6 +6,7 @@
   <title>ZeiterfassungsApp</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/excellentexport@3.8.0/dist/excellentexport.min.js"></script>
 </head>
 <body>
   <header>
@@ -34,8 +35,17 @@
 
     <section id="zusammenfassung">
       <h2>Zusammenfassung</h2>
-      <div id="summary"></div>
-      <button id="exportBtn">Exportieren (Excel)</button>
+      <table id="summaryTable">
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Projekt</th>
+            <th>Zeit (h)</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+      <button id="exportBtn" onclick="ExcellentExport.convert({ anchor: this, filename: 'zeiterfassung', format: 'xlsx' }, [{ name: 'Zeiten', from: { table: 'summaryTable' } }])">Exportieren (Excel)</button>
     </section>
   </main>
 

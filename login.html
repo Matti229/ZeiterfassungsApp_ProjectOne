@@ -7,19 +7,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="auth-container">
+  <main class="auth-container">
     <h1>Login</h1>
     <form id="loginForm">
-      <label for="username">Benutzername</label>
-      <input type="text" id="username" name="username" required />
-      
-      <label for="password">Passwort</label>
-      <input type="password" id="password" name="password" required />
-
+      <input type="text" id="loginUsername" placeholder="Benutzername" required />
+      <input type="password" id="loginPassword" placeholder="Passwort" required />
       <button type="submit">Einloggen</button>
     </form>
-    <p>Noch kein Account? <a href="register.html">Registrieren</a></p>
-  </div>
+    <p>Noch kein Konto? <a href="register.html">Registrieren</a></p>
+  </main>
 
   <script src="auth.js"></script>
 </body>

@@ -1,55 +1,59 @@
-const usersKey = "zeiterfassung_users";
-const loginForm = document.getElementById("loginForm");
-const registerForm = document.getElementById("registerForm");
+// auth.js
 
-function getUsers() {
-  return JSON.parse(localStorage.getItem(usersKey)) || {};
-}
-
+// Benutzer speichern
 function saveUser(username, password) {
-  const users = getUsers();
-  if (users[username]) return false;
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
   users[username] = { password };
-  localStorage.setItem(usersKey, JSON.stringify(users));
-  return true;
+  localStorage.setItem("users", JSON.stringify(users));
 }
 
-function validateLogin(username, password) {
-  const users = getUsers();
+// Benutzer prüfen
+function authenticateUser(username, password) {
+  const users = JSON.parse(localStorage.getItem("users") || "{}");
   return users[username] && users[username].password === password;
 }
 
-if (loginForm) {
-  loginForm.addEventListener("submit", e => {
+// Beim Registrieren
+if (document.getElementById("registerForm")) {
+  document.getElementById("registerForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const username = loginForm.username.value.trim();
-    const password = loginForm.password.value;
+    const username = document.getElementById("registerUsername").value;
+    const password = document.getElementById("registerPassword").value;
 
-    if (validateLogin(username, password)) {
+    const users = JSON.parse(localStorage.getItem("users") || "{}");
+    if (users[username]) {
+      alert("Benutzername existiert bereits.");
+    } else {
+      saveUser(username, password);
       localStorage.setItem("loggedInUser", username);
-      window.location.href = "index.html";
+      alert("Registrierung erfolgreich!");
+      window.location.href = "index.html"; // Weiterleitung zur App
+    }
+  });
+}
+
+// Beim Login
+if (document.getElementById("loginForm")) {
+  document.getElementById("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const username = document.getElementById("loginUsername").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if (authenticateUser(username, password)) {
+      localStorage.setItem("loggedInUser", username);
+      alert("Login erfolgreich!");
+      window.location.href = "index.html"; // Weiterleitung zur App
     } else {
       alert("Falscher Benutzername oder Passwort.");
     }
   });
 }
 
-if (registerForm) {
-  registerForm.addEventListener("submit", e => {
-    e.preventDefault();
-    const username = registerForm.username.value.trim();
-    const password = registerForm.password.value;
-
-    if (!username || !password) {
-      alert("Bitte Benutzername und Passwort angeben.");
-      return;
-    }
-
-    if (saveUser(username, password)) {
-      alert("Registrierung erfolgreich. Du kannst dich nun einloggen.");
-      registerForm.reset();
-    } else {
-      alert("Benutzername existiert bereits.");
-    }
+// Logout
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "login.html";
   });
 }
