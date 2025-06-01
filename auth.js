@@ -1,35 +1,55 @@
-// Lokale Benutzerdaten verwalten (LocalStorage)
+const usersKey = "zeiterfassung_users";
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
 
-document.getElementById("loginForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const username = document.getElementById("loginUsername").value;
-  const password = document.getElementById("loginPassword").value;
+function getUsers() {
+  return JSON.parse(localStorage.getItem(usersKey)) || {};
+}
 
-  const users = JSON.parse(localStorage.getItem("users")) || {};
+function saveUser(username, password) {
+  const users = getUsers();
+  if (users[username]) return false;
+  users[username] = { password };
+  localStorage.setItem(usersKey, JSON.stringify(users));
+  return true;
+}
 
-  if (users[username] && users[username].password === password) {
-    // Login erfolgreich
-    localStorage.setItem("loggedInUser", username);
-    window.location.href = "index.html";
-  } else {
-    alert("Falscher Benutzername oder Passwort");
-  }
-});
+function validateLogin(username, password) {
+  const users = getUsers();
+  return users[username] && users[username].password === password;
+}
 
-document.getElementById("registerForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const username = document.getElementById("registerUsername").value;
-  const password = document.getElementById("registerPassword").value;
+if (loginForm) {
+  loginForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const username = loginForm.username.value.trim();
+    const password = loginForm.password.value;
 
-  const users = JSON.parse(localStorage.getItem("users")) || {};
+    if (validateLogin(username, password)) {
+      localStorage.setItem("loggedInUser", username);
+      window.location.href = "index.html";
+    } else {
+      alert("Falscher Benutzername oder Passwort.");
+    }
+  });
+}
 
-  if (users[username]) {
-    alert("Benutzername bereits vergeben");
-  } else {
-    users[username] = { password: password, data: [] };
-    localStorage.setItem("users", JSON.stringify(users));
-    alert("Registrierung erfolgreich! Jetzt einloggen.");
-  }
+if (registerForm) {
+  registerForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const username = registerForm.username.value.trim();
+    const password = registerForm.password.value;
 
-  document.getElementById("registerForm").reset();
-});
+    if (!username || !password) {
+      alert("Bitte Benutzername und Passwort angeben.");
+      return;
+    }
+
+    if (saveUser(username, password)) {
+      alert("Registrierung erfolgreich. Du kannst dich nun einloggen.");
+      registerForm.reset();
+    } else {
+      alert("Benutzername existiert bereits.");
+    }
+  });
+}

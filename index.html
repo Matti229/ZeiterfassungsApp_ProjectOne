@@ -4,52 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZeiterfassungsApp</title>
+  <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Projekt-Zeiterfassung</h1>
-    <button id="logoutBtn" title="Logout">
-      <img src="icons/logout.png" alt="Logout" />
-    </button>
+    <h1>Zeiterfassung</h1>
+    <button id="logoutBtn"><img src="icons/logout.png" alt="Logout" /></button>
   </header>
 
   <main>
-    <section id="project-section">
-      <label for="projectInput">Neues Projekt:</label>
-      <input type="text" id="projectInput" placeholder="Projektname eingeben" />
-
-      <label for="projectDropdown">Oder wähle ein bestehendes:</label>
+    <section id="projectSelection">
+      <input type="text" id="projectNameInput" placeholder="Neues Projekt eingeben" />
       <select id="projectDropdown">
-        <option value="">Projekt auswählen</option>
+        <option value="">— Projekt auswählen —</option>
       </select>
-
-      <div id="controls">
-        <button id="startBtn" title="Start">
-          <img src="icons/start.png" alt="Start" />
-        </button>
-        <button id="pauseBtn" title="Pause">
-          <img src="icons/pause.png" alt="Pause" />
-        </button>
-        <button id="stopBtn" title="Stopp">
-          <img src="icons/stop.png" alt="Stop" />
-        </button>
-      </div>
     </section>
 
-    <section id="live-time">
-      <h2>Laufende Zeit:</h2>
-      <p id="timeDisplay">00:00:00</p>
+    <section id="controls">
+      <button id="startBtn"><img src="icons/start.png" alt="Start" /></button>
+      <button id="pauseBtn"><img src="icons/pause.png" alt="Pause" /></button>
+      <button id="stopBtn"><img src="icons/stop.png" alt="Stopp" /></button>
     </section>
 
-    <section id="summary">
+    <section id="zeitAnzeige">
+      <div id="liveTimer">00:00:00</div>
+      <div id="messageArea"></div>
+    </section>
+
+    <section id="zusammenfassung">
       <h2>Zusammenfassung</h2>
-      <div id="summaryContent">
-        <!-- Zusammenfassungsdaten werden hier angezeigt -->
-      </div>
+      <div id="summary"></div>
+      <button id="exportBtn">Exportieren (Excel)</button>
     </section>
   </main>
 
+  <script src="auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
